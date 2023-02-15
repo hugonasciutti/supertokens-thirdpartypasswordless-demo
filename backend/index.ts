@@ -2,20 +2,26 @@ import express from "express";
 import cors from "cors";
 import supertokens from "supertokens-node";
 import { verifySession } from "supertokens-node/recipe/session/framework/express";
-import { middleware, errorHandler, SessionRequest } from "supertokens-node/framework/express";
+import {
+  middleware,
+  errorHandler,
+  SessionRequest,
+} from "supertokens-node/framework/express";
 import { SuperTokensConfig } from "./config";
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 supertokens.init(SuperTokensConfig);
 
 const app = express();
 
 app.use(
-    cors({
-        origin: "http://localhost:3000",
-        allowedHeaders: ["content-type", ...supertokens.getAllCORSHeaders()],
-        methods: ["GET", "PUT", "POST", "DELETE"],
-        credentials: true,
-    })
+  cors({
+    origin: "http://localhost:3000",
+    allowedHeaders: ["content-type", ...supertokens.getAllCORSHeaders()],
+    methods: ["GET", "PUT", "POST", "DELETE"],
+    credentials: true,
+  })
 );
 
 // This exposes all the APIs from SuperTokens to the client.
@@ -23,12 +29,12 @@ app.use(middleware());
 
 // An example API that requires session verification
 app.get("/sessioninfo", verifySession(), async (req: SessionRequest, res) => {
-    let session = req.session;
-    res.send({
-        sessionHandle: session!.getHandle(),
-        userId: session!.getUserId(),
-        accessTokenPayload: session!.getAccessTokenPayload(),
-    });
+  let session = req.session;
+  res.send({
+    sessionHandle: session!.getHandle(),
+    userId: session!.getUserId(),
+    accessTokenPayload: session!.getAccessTokenPayload(),
+  });
 });
 
 // In case of session related errors, this error handler
